@@ -47,6 +47,10 @@ char *resolve_path(const char *cmd, char **envp)
 	dir = strtok(copy, ":");
 	while (dir)
 	{
+		/* empty PATH entry means current directory */
+		if (dir[0] == '\0')
+			dir = ".";
+
 		a = strlen(dir);
 		b = strlen(cmd);
 

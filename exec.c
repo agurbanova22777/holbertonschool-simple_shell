@@ -18,7 +18,7 @@ void print_not_found(const char *prog, unsigned long line_no, const char *cmd)
  * @line_no: line number
  * @envp: environment
  *
- * Return: malloc'd path or NULL
+ * Return: malloc'd path or NULL (and prints not found)
  */
 static char *get_cmd_path(const char *cmd, const char *prog,
 		unsigned long line_no, char **envp)
@@ -80,6 +80,10 @@ int exec_cmd(char **av, const char *prog, unsigned long line_no, char **envp)
 	char *path;
 	int status;
 
+	if (!av || !av[0])
+		return (0);
+
+	/* IMPORTANT: resolve/validate BEFORE fork */
 	path = get_cmd_path(av[0], prog, line_no, envp);
 	if (!path)
 		return (127);
