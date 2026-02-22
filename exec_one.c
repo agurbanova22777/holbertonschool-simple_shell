@@ -16,10 +16,11 @@ void print_not_found(const char *prog, unsigned long line_no, const char *cmd)
  * @prog: argv[0]
  * @line_no: line number
  * @cmd: command (no args)
+ * @envp: environment
  *
  * Return: exit status
  */
-int run_one_word(const char *prog, unsigned long line_no, char *cmd)
+int run_one_word(const char *prog, unsigned long line_no, char *cmd, char **envp)
 {
 	pid_t pid;
 	int st;
@@ -37,8 +38,7 @@ int run_one_word(const char *prog, unsigned long line_no, char *cmd)
 
 	if (pid == 0)
 	{
-		execve(cmd, av, environ);
-		/* For this task, any failure => "not found" style */
+		execve(cmd, av, envp);
 		print_not_found(prog, line_no, cmd);
 		_exit(127);
 	}
