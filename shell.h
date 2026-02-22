@@ -19,4 +19,6 @@ char *resolve_path(const char *cmd, char **envp);
 int exec_cmd(char **av, const char *prog, unsigned long line_no, char **envp);
 void print_not_found(const char *prog, unsigned long line_no, const char *cmd);
 
+void print_env(char **envp);
+
 #endif

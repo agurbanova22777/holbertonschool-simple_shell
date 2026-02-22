@@ -36,11 +36,17 @@ int shell_loop(const char *prog, char **envp)
 		if (!av)
 			continue;
 
-		/* built-in: exit (no args required/handled) */
 		if (strcmp(av[0], "exit") == 0)
 		{
 			free_argv(av);
 			break;
+		}
+
+		if (strcmp(av[0], "env") == 0)
+		{
+			print_env(envp);
+			free_argv(av);
+			continue;
 		}
 
 		status = exec_cmd(av, prog, line_no, envp);
