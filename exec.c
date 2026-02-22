@@ -12,6 +12,61 @@ void print_not_found(const char *prog, unsigned long line_no, const char *cmd)
 }
 
 /**
+ * get_cmd_path - Build executable path for a command
+ * @cmd: command name
+ * @prog: argv[0]
+ * @line_no: line number
+ * @envp: environment
+ *
+ * Return: malloc'd path or NULL
+ */
+static char *get_cmd_path(const char *cmd, const char *prog,
+		unsigned long line_no, char **envp)
+{
+	char *path;
+
+	if (strchr(cmd, '/'))
+	{
+		if (access(cmd, X_OK) != 0)
+		{
+			print_not_found(prog, line_no, cmd);
+			return (NULL);
+		}
+		path = strdup(cmd);
+		return (path);
+	}
+
+	path = resolve_path(cmd, envp);
+	if (!path)
+		print_not_found(prog, line_no, cmd);
+
+	return (path);
+}
+
+/**
+ * wait_child - Wait for child and return its exit status
+ * @pid: child pid
+ * @prog: argv[0]
+ *
+ * Return: exit status
+ */
+static int wait_child(pid_t pid, const char *prog)
+{
+	int st;
+
+	if (waitpid(pid, &st, 0) == -1)
+	{
+		perror(prog);
+		return (1);
+	}
+
+	if (WIFEXITED(st))
+		return (WEXITSTATUS(st));
+
+	return (1);
+}
+
+/**
  * exec_cmd - Execute a command (fork + execve)
  * @av: argument vector
  * @prog: argv[0]
@@ -23,31 +78,15 @@ void print_not_found(const char *prog, unsigned long line_no, const char *cmd)
 int exec_cmd(char **av, const char *prog, unsigned long line_no, char **envp)
 {
 	pid_t pid;
-	int st;
-	char *path = NULL;
+	char *path;
+	int status;
 
 	if (!av || !av[0])
 		return (0);
 
-	if (strchr(av[0], '/'))
-	{
-		if (access(av[0], X_OK) != 0)
-		{
-			print_not_found(prog, line_no, av[0]);
-			return (127);
-		}
-		path = strdup(av[0]);
-	}
-	else
-	{
-		path = resolve_path(av[0], envp);
-	}
-
+	path = get_cmd_path(av[0], prog, line_no, envp);
 	if (!path)
-	{
-		print_not_found(prog, line_no, av[0]);
 		return (127);
-	}
 
 	pid = fork();
 	if (pid == -1)
@@ -61,19 +100,12 @@ int exec_cmd(char **av, const char *prog, unsigned long line_no, char **envp)
 	{
 		execve(path, av, envp);
 		perror(prog);
+		free(path);
 		_exit(126);
 	}
 
 	free(path);
+	status = wait_child(pid, prog);
 
-	if (waitpid(pid, &st, 0) == -1)
-	{
-		perror(prog);
-		return (1);
-	}
-
-	if (WIFEXITED(st))
-		return (WEXITSTATUS(st));
-
-	return (1);
+	return (status);
 }
