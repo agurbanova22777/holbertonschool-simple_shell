@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * shell_loop - Main REPL loop (one-word commands only)
+ * shell_loop - Main loop (one-word commands only)
  * @prog: argv[0]
  * @envp: environment
  *

@@ -11,12 +11,10 @@ void trim_line(char *s)
 	if (!s)
 		return;
 
-	/* remove trailing newline/carriage return */
 	end = strlen(s);
 	while (end > 0 && (s[end - 1] == '\n' || s[end - 1] == '\r'))
 		s[--end] = '\0';
 
-	/* skip leading spaces/tabs */
 	while (s[start] == ' ' || s[start] == '\t')
 		start++;
 
@@ -27,7 +25,6 @@ void trim_line(char *s)
 		s[i] = '\0';
 	}
 
-	/* trim trailing spaces/tabs */
 	end = strlen(s);
 	while (end > 0 && (s[end - 1] == ' ' || s[end - 1] == '\t'))
 		s[--end] = '\0';
