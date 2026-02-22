@@ -10,9 +10,13 @@
 
 int shell_loop(const char *prog, char **envp);
 
-void trim_line(char *s);
-int run_one_word(const char *prog, unsigned long line_no, char *cmd, char **envp);
+char **split_line(char *line);
+void free_argv(char **argv);
 
+char *get_env(const char *name, char **envp);
+char *resolve_path(const char *cmd, char **envp);
+
+int exec_cmd(char **av, const char *prog, unsigned long line_no, char **envp);
 void print_not_found(const char *prog, unsigned long line_no, const char *cmd);
 
 #endif

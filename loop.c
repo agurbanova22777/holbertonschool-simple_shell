@@ -1,7 +1,7 @@
 #include "shell.h"
 
 /**
- * shell_loop - Main loop (one-word commands only)
+ * shell_loop - Read/execute loop
  * @prog: argv[0]
  * @envp: environment
  *
@@ -18,8 +18,10 @@ int shell_loop(const char *prog, char **envp)
 
 	while (1)
 	{
+		char **av;
+
 		if (interactive)
-			write(STDOUT_FILENO, "#cisfun$ ", 9);
+			write(STDOUT_FILENO, "($) ", 4);
 
 		nread = getline(&line, &cap, stdin);
 		if (nread == -1)
@@ -30,12 +32,18 @@ int shell_loop(const char *prog, char **envp)
 		}
 
 		line_no++;
-		trim_line(line);
-
-		if (line[0] == '\0')
+		av = split_line(line);
+		if (!av)
 			continue;
 
-		status = run_one_word(prog, line_no, line, envp);
+		if (strcmp(av[0], "exit") == 0)
+		{
+			free_argv(av);
+			break;
+		}
+
+		status = exec_cmd(av, prog, line_no, envp);
+		free_argv(av);
 	}
 
 	free(line);
