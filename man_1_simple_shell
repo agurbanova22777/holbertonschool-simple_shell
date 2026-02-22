@@ -1,0 +1,46 @@
+.TH SIMPLE_SHELL 1 "February 2026" "hsh" "User Commands"
+.SH NAME
+simple_shell \- a simple UNIX command interpreter
+.SH SYNOPSIS
+.B hsh
+.SH DESCRIPTION
+.B hsh
+is a minimal UNIX command interpreter.
+
+It reads commands from standard input and executes them by creating a child
+process using fork(2) and running the command using execve(2).
+
+In interactive mode (when standard input is a terminal), the prompt
+.B ($)
+is displayed before each command.
+
+In non-interactive mode, commands are read from standard input without a prompt.
+
+.SH COMMAND EXECUTION
+If the command contains a slash ("/"), it is executed directly as a path.
+Otherwise,
+.B hsh
+searches for the command in the directories listed in the PATH environment variable.
+
+.SH BUILTINS
+.TP
+.B exit
+Exit the shell.
+.SH EXIT STATUS
+The exit status is the exit status of the last executed command.
+When a command is not found, the status is 127.
+.SH ERRORS
+Error messages match
+.BR sh (1)
+format, except the program name is taken from argv[0].
+
+Example:
+.br
+./hsh: 1: qwerty: not found
+.SH AUTHOR
+See AUTHORS file.
+.SH SEE ALSO
+.BR sh (1),
+.BR execve (2),
+.BR fork (2),
+.BR waitpid (2)
