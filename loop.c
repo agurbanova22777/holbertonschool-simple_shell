@@ -36,6 +36,7 @@ int shell_loop(const char *prog, char **envp)
 		if (!av)
 			continue;
 
+		/* built-in: exit (no args required/handled) */
 		if (strcmp(av[0], "exit") == 0)
 		{
 			free_argv(av);
